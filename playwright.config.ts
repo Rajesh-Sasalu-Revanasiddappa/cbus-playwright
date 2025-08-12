@@ -21,7 +21,7 @@ export default defineConfig({
   timeout: 30 * 1000,
   expect: {
     /* Maximum time expect() should wait for the condition to be met. */
-    timeout: 10_000, 
+    timeout: 10 * 1000, 
   },
   /* Shared settings for all the projects below */
   use: {
@@ -31,8 +31,8 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     headless: false,
     defaultBrowserType: 'chromium',
-    actionTimeout: 15000,    
-    navigationTimeout: 30000 
+    actionTimeout: 15 * 1000,    
+    navigationTimeout: 30 * 1000 
   },
 
   /* Configure projects for major browsers */

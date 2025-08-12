@@ -17,6 +17,12 @@ export default class AdminPage {
     readonly errorMessage = () => this.page.getByText('Should have at least 7');
     readonly saveButton = () => this.page.getByRole('button', { name: 'Save' });
     readonly successMessage = () => this.page.getByText('SuccessSuccessfully Saved');
+    readonly searchInput = () => this.page.getByRole('textbox').nth(1);
+    readonly searchButton = () => this.page.getByRole('button', { name: 'Search' });
+    readonly editButton = () => this.page.getByRole('button', { name: '' }).first();
+    readonly updateTextbox = () => this.page.getByRole('textbox').nth(2);
+    readonly successUpdateMessage = () => this.page.getByText('Successfully Updated');
+    readonly succesMessage = () => this.page.getByText('Success', { exact: true });
 
     constructor(page: Page) {
         this.page = page;
@@ -67,5 +73,25 @@ export default class AdminPage {
     public async isUserAddedSuccessfully(): Promise<void> {
     await expect(this.successMessage()).toBeVisible();
     await expect(this.successMessage()).toHaveText('SuccessSuccessfully Saved');
+    }
+
+    public async searchUser({usernameToSearch}:{usernameToSearch: string}): Promise<void> {
+        await this.searchInput().click();
+        await this.searchInput().fill(usernameToSearch);
+        await this.searchButton().click();
+    }
+
+    public async editUser({usernameToSearch}:{usernameToSearch: string}): Promise<void> {
+        await this.editButton().click();
+        await this.updateTextbox().click();
+        await this.updateTextbox().fill(usernameToSearch + '-update');
+        await this.saveButton().click();
+    }
+
+    public async isUserUpdatedSuccessfully(): Promise<void> {
+        await this.succesMessage().isVisible();
+        await expect(this.succesMessage()).toHaveText('Success');
+        await this.successUpdateMessage().isVisible();
+        await expect(this.successUpdateMessage()).toHaveText('Successfully Updated');
     }
 }
