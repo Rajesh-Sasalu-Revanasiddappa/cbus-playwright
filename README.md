@@ -63,6 +63,7 @@ To run tests with specific environment:
 ```bash
 ENV=uat npx playwright test
 ```
+NOTE: Tests in uat env should fail, which is expected and intentional, as base url is pointing to non-Orange HRM system.
 
 ### Base Page Setup
 `basePage.ts` handles common setup and teardown:
