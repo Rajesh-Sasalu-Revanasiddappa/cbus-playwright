@@ -1,0 +1,151 @@
+pipeline {
+    agent any
+    
+    tools {
+        nodejs '18.x' // Make sure Node.js 18.x is configured in Jenkins
+    }
+    
+    environment {
+        // Environment variables for the test
+        BASE_URL = 'https://opensource-demo.orangehrmlive.com/web/index.php/auth/login'
+        VALID_USERNAME = 'Admin'
+        VALID_PASSWORD = 'admin123'
+        
+        // CI specific settings
+        CI = 'true'
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = '0'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    echo 'Checking out source code...'
+                    checkout scm
+                }
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    echo 'Installing Node.js dependencies...'
+                    sh 'npm ci'
+                    
+                    echo 'Installing Playwright browsers...'
+                    sh 'npx playwright install --with-deps'
+                }
+            }
+        }
+        
+        stage('Lint and Type Check') {
+            steps {
+                script {
+                    echo 'Running TypeScript compilation check...'
+                    sh 'npx tsc --noEmit'
+                }
+            }
+        }
+        
+        stage('Run Tests') {
+            parallel {
+                stage('Chrome Tests') {
+                    steps {
+                        script {
+                            echo 'Running tests on Chrome...'
+                            sh 'npx playwright test --project=chromium --reporter=junit'
+                        }
+                    }
+                    post {
+                        always {
+                            publishTestResults testResultsPattern: 'test-results/results.xml'
+                        }
+                    }
+                }
+                
+                stage('Firefox Tests') {
+                    steps {
+                        script {
+                            echo 'Running tests on Firefox...'
+                            sh 'npx playwright test --project=firefox --reporter=junit'
+                        }
+                    }
+                }
+                
+                stage('Webkit Tests') {
+                    steps {
+                        script {
+                            echo 'Running tests on WebKit...'
+                            sh 'npx playwright test --project=webkit --reporter=junit'
+                        }
+                    }
+                }
+            }
+        }
+        
+        stage('Generate Reports') {
+            steps {
+                script {
+                    echo 'Generating test reports...'
+                    sh 'npx playwright show-report --host=0.0.0.0 --port=9323 &'
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'Cleaning up...'
+            
+            // Archive test results
+            archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
+            
+            // Publish HTML reports
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'playwright-report',
+                reportFiles: 'index.html',
+                reportName: 'Playwright Test Report'
+            ])
+            
+            // Clean workspace
+            cleanWs()
+        }
+        
+        success {
+            echo 'Pipeline succeeded! All tests passed.'
+            
+            // Send success notification
+            emailext (
+                subject: "✅ OrangeHRM Test Suite - SUCCESS",
+                body: "All tests passed successfully!\n\nBuild: ${BUILD_NUMBER}\nDuration: ${BUILD_DURATION}",
+                to: "${env.CHANGE_AUTHOR_EMAIL}"
+            )
+        }
+        
+        failure {
+            echo 'Pipeline failed! Check the logs and test reports.'
+            
+            // Send failure notification
+            emailext (
+                subject: "❌ OrangeHRM Test Suite - FAILED",
+                body: "Test execution failed!\n\nBuild: ${BUILD_NUMBER}\nCheck the attached reports for details.",
+                to: "${env.CHANGE_AUTHOR_EMAIL}",
+                attachLog: true
+            )
+        }
+        
+        unstable {
+            echo 'Pipeline is unstable. Some tests may have failed.'
+            
+            // Send unstable notification
+            emailext (
+                subject: "⚠️ OrangeHRM Test Suite - UNSTABLE",
+                body: "Some tests failed or are flaky!\n\nBuild: ${BUILD_NUMBER}\nCheck the test reports.",
+                to: "${env.CHANGE_AUTHOR_EMAIL}"
+            )
+        }
+    }
+}
