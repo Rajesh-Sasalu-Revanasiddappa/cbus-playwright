@@ -1,29 +1,5 @@
 import {test} from '../page-object-model/fixtures/basePage';
 
-// test('test', async ({ page }) => {
-//   await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/auth/login');
-//   await page.getByRole('textbox', { name: 'Username' }).fill('Admin');
-//   await page.getByRole('textbox', { name: 'Username' }).press('Tab');
-//   await page.getByRole('textbox', { name: 'Password' }).fill('admin123');
-//   await page.getByRole('button', { name: 'Login' }).click();
-//   await page.getByRole('link', { name: 'Admin' }).click();
-//   await page.getByRole('button', { name: ' Add' }).click();
-//   await page.getByText('-- Select --').first().click();
-//   await page.getByRole('option', { name: 'ESS' }).click();
-//   await page.getByRole('textbox', { name: 'Type for hints...' }).click();
-//   await page.getByRole('textbox', { name: 'Type for hints...' }).fill('Hamilton');
-//   await page.getByRole('option', { name: 'Russel Hamilton' }).click();
-//   await page.getByText('-- Select --').click();
-//   await page.getByRole('option', { name: 'Enabled' }).click();
-//   await page.getByRole('textbox').nth(2).click();
-//   await page.getByRole('textbox').nth(2).fill('russel-hamilton');
-//   await page.getByRole('textbox').nth(3).click();
-//   await page.getByRole('textbox').nth(3).fill('Pass123!');
-//   await page.getByRole('textbox').nth(4).click();
-//   await page.getByRole('textbox').nth(4).fill('Pass123!');
-//   await page.getByText('Your password must contain').isVisible();
-// });
-
 test.beforeEach(async ({ loginPage }) => {
   await loginPage.goto();
   await loginPage.login(process.env.validUsername ?? '', process.env.validPassword ?? '');
