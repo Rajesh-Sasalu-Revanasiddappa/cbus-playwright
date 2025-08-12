@@ -61,7 +61,7 @@ We use dotenv for environment management:
 
 To run tests with specific environment:
 ```bash
-npx playwright test --env=test
+ENV=uat npx playwright test
 ```
 
 ### Base Page Setup
