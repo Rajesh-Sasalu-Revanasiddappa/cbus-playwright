@@ -2,20 +2,12 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Load environment variables from .env file
-dotenv.config({ path: path.resolve(__dirname, `./configs/env/.env.${process.env.NODE_ENV || 'test'}`) });
-//dotenv.config({ path: path.resolve(__dirname, '../configs/env/.env.test') });
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
+/* Load environment variables from .env file */
+dotenv.config({ path: path.resolve(__dirname, `./configs/env/.env.${process.env.ENV || 'test'}`) });
+console.log('Current environment:', process.env.ENV || 'test');
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: './tests',
-  /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
@@ -25,19 +17,22 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  /* Maximum time one test can run for. */
+  timeout: 30 * 1000,
   expect: {
-    timeout: 10_000,
+    /* Maximum time expect() should wait for the condition to be met. */
+    timeout: 10_000, 
   },
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  /* Shared settings for all the projects below */
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.baseUrl || 'Undefined',
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    /* Collect trace when retrying the failed test. */
     trace: 'on-first-retry',
-    // Capture screenshot after each test failure.
     screenshot: 'only-on-failure',
     headless: false,
     defaultBrowserType: 'chromium',
+    actionTimeout: 15000,    
+    navigationTimeout: 30000 
   },
 
   /* Configure projects for major browsers */
@@ -46,5 +41,35 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
+    // Additional browsers can be enabled below
+    // Note: Minor framework adjustments may be required
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
+
+    // /* Test against mobile viewports. */
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'] },
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: { ...devices['iPhone 12'] },
+    // },
+
+    // /* Test against branded browsers. */
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
+    // {
+    //   name: 'Google Chrome',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    // },
   ],
 });
