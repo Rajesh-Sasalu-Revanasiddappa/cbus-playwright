@@ -7,7 +7,7 @@ test.beforeEach('Login successful user and verify the dashboard is loaded succes
 });
 
 test('Add contact details with attaching a document file', async ({ myInfoContactDetailsPage }) => {
-  await myInfoContactDetailsPage.setContactDetails('London');
+  await myInfoContactDetailsPage.setContactDetails(process.env.contactLocation ?? 'Melbourne');
   await myInfoContactDetailsPage.uploadFile(process.env.testDocumentFileName ?? 'test document.pdf');
   await myInfoContactDetailsPage.isDocumentUploadedSuccessfully(process.env.testDocumentFileName ?? 'test document.pdf');
 });
