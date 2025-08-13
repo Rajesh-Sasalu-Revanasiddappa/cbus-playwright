@@ -1,4 +1,4 @@
-import { test, Page, expect } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 
 export default class LoginPage {
     readonly page: Page;
@@ -12,9 +12,9 @@ export default class LoginPage {
     }
 
     // locators
-    usernameInput = () => this.page.getByRole('textbox', { name: 'Username' })
-    passwordInput = () => this.page.getByRole('textbox', { name: 'Password' })
-    loginButton = () => this.page.getByRole('button', { name: 'Login' })
+    readonly usernameInput = () => this.page.getByRole('textbox', { name: 'Username' })
+    readonly passwordInput = () => this.page.getByRole('textbox', { name: 'Password' })
+    readonly loginButton = () => this.page.getByRole('button', { name: 'Login' })
 
     // actions
     public async login(username: string, password: string) {

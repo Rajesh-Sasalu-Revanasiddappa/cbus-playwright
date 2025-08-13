@@ -1,5 +1,4 @@
 import {test} from '../page-object-model/fixtures/basePage';
-//import { sharedTestData } from '../test-data/shared-test-data/testData';
 
 // Create a test fixture to share data between tests
 const testData = {
